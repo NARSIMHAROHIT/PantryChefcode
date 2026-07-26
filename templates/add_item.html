@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Add an item</h1>
+<form class="form" method="post" action="{{ url_for('add_item') }}">
+  <label>Name
+    <input name="name" required placeholder="e.g. Tomatoes" autofocus>
+  </label>
+
+  <div class="row">
+    <label>Quantity
+      <input name="quantity" type="number" step="any" min="0" value="1">
+    </label>
+    <label>Unit
+      <input name="unit" placeholder="pcs, g, ml, pack" value="pcs">
+    </label>
+  </div>
+
+  <label>Category
+    <select name="category">
+      {% for c in categories %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+    </select>
+  </label>
+
+  <label>Expiry / best-before date <span class="muted">(optional but recommended)</span>
+    <input name="expiry_date" type="date" min="{{ today }}">
+  </label>
+
+  <div class="actions">
+    <button class="btn-add big" type="submit">Add to pantry</button>
+    <a class="cancel" href="{{ url_for('dashboard') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

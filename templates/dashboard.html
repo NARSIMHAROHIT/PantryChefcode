@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Your pantry <span class="muted">({{ total }} items)</span></h1>
+
+{% if total == 0 %}
+  <div class="empty">
+    <p>Your pantry is empty. Add the food you have so PantryChef can warn you before
+       anything expires and suggest what to cook.</p>
+    <a class="btn-add big" href="{{ url_for('add_item') }}">+ Add your first item</a>
+  </div>
+{% endif %}
+
+{% macro item_card(it) %}
+  <div class="card {{ it.expiry_state }}">
+    <div class="card-main">
+      <strong>{{ it.name }}</strong>
+      <span class="qty">{{ it.quantity | round(2) }} {{ it.unit }}</span>
+      <span class="tag">{{ it.category }}</span>
+    </div>
+    <div class="card-expiry">
+      {% if it.expiry_state == 'expired' %}
+        <span class="badge expired">Expired {{ -it.days_to_expiry }}d ago</span>
+      {% elif it.expiry_state == 'soon' %}
+        <span class="badge soon">Use in {{ it.days_to_expiry }}d</span>
+      {% elif it.expiry_state == 'ok' %}
+        <span class="badge ok">{{ it.days_to_expiry }}d left</span>
+      {% else %}
+        <span class="badge none">No expiry set</span>
+      {% endif %}
+    </div>
+    <div class="card-actions">
+      <form method="post" action="{{ url_for('resolve_item', item_id=it.id, action='used') }}">
+        <button class="mini good" title="I used/ate this">Used ✓</button></form>
+      <form method="post" action="{{ url_for('resolve_item', item_id=it.id, action='wasted') }}">
+        <button class="mini bad" title="I had to throw this out">Wasted</button></form>
+      <form method="post" action="{{ url_for('resolve_item', item_id=it.id, action='delete') }}">
+        <button class="mini plain" title="Remove">✕</button></form>
+    </div>
+  </div>
+{% endmacro %}
+
+{% for key, label in [('expired','⚠️ Expired'), ('soon','⏳ Use soon (≤3 days)'),
+                      ('ok','✅ Fresh'), ('none','🗒️ No expiry date')] %}
+  {% if buckets[key] %}
+    <section>
+      <h2 class="section {{ key }}">{{ label }} <span class="muted">({{ buckets[key]|length }})</span></h2>
+      {% for it in buckets[key] %}{{ item_card(it) }}{% endfor %}
+    </section>
+  {% endif %}
+{% endfor %}
+{% endblock %}

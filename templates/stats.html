@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Your stats</h1>
+
+<div class="stats-grid">
+  <div class="stat"><div class="num">{{ active }}</div><div class="lbl">In pantry now</div></div>
+  <div class="stat"><div class="num">{{ soon }}</div><div class="lbl">Expiring / expired</div></div>
+  <div class="stat good"><div class="num">{{ used }}</div><div class="lbl">Used (saved)</div></div>
+  <div class="stat bad"><div class="num">{{ wasted }}</div><div class="lbl">Wasted</div></div>
+</div>
+
+<div class="waste-meter">
+  <p><strong>Waste rate:</strong> {{ waste_rate }}%
+     <span class="muted">(of everything you've finished with)</span></p>
+  <div class="bar"><div class="bar-fill" style="width: {{ waste_rate }}%"></div></div>
+  {% if used + wasted == 0 %}
+    <p class="muted">Start marking items "Used" or "Wasted" and your waste rate shows up here.</p>
+  {% elif waste_rate <= 15 %}
+    <p class="good-text">Great job — very little waste. 🌱</p>
+  {% else %}
+    <p>Room to improve. Cook the "use soon" items first and watch this drop.</p>
+  {% endif %}
+</div>
+{% endblock %}

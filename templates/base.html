@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PantryChef</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('dashboard') }}">🥕 PantryChef</a>
+    <nav>
+      <a href="{{ url_for('dashboard') }}">Pantry</a>
+      <a href="{{ url_for('recipes_page') }}">Cook</a>
+      <a href="{{ url_for('stats') }}">Stats</a>
+      <a class="btn-add" href="{{ url_for('add_item') }}">+ Add item</a>
+    </nav>
+  </header>
+
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="flash {{ category }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>PantryChef — eat what you buy, waste less. Built as a learning project.</p>
+  </footer>
+</body>
+</html>

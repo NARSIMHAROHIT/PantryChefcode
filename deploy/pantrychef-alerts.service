@@ -1,0 +1,10 @@
+[Unit]
+Description=PantryChef expiry alert digest
+After=network.target postgresql.service
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/pantrychef
+EnvironmentFile=/home/ubuntu/pantrychef/.env
+ExecStart=/home/ubuntu/pantrychef/.venv/bin/python alerts.py
