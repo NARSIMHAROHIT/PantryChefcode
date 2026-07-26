@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 
 from models import db, Item, CATEGORIES, ACTIVE, USED, WASTED
 from recipes import suggest
+import recipes_data as rd
 
 load_dotenv()
 
@@ -33,6 +34,15 @@ def create_app():
     db.init_app(app)
     with app.app_context():
         db.create_all()
+
+    # Lets templates show a real photo if the file exists, else a placeholder.
+    def has_image(rel_path):
+        return os.path.isfile(os.path.join(app.static_folder, "images", rel_path))
+
+    @app.context_processor
+    def inject_helpers():
+        return {"has_image": has_image, "DIET_LABELS": rd.DIET_LABELS,
+                "SPICE_LABELS": rd.SPICE_LABELS}
 
     # ---------------- routes ----------------
 
@@ -93,12 +103,42 @@ def create_app():
         db.session.commit()
         return redirect(request.referrer or url_for("dashboard"))
 
-    @app.route("/recipes")
-    def recipes_page():
+    @app.route("/cook")
+    def cook():
+        # Filters from the query string (all optional)
+        category = request.args.get("category") or None
+        diet = request.args.get("diet") or None
+        spice = request.args.get("spice") or None
+        if category not in rd.CATEGORY_ORDER:
+            category = None
+
+        recipes = rd.filtered(category=category, diet=diet, spice=spice)
+        groups = rd.grouped_by_category(recipes)
+
+        # "Cook from your pantry" section
         names = [it.normalized_name() for it in Item.query.filter_by(status=ACTIVE)]
         can_make, almost = suggest(names)
-        return render_template("recipes.html", can_make=can_make,
-                               almost=almost, have_items=bool(names))
+
+        return render_template(
+            "cook.html", groups=groups, categories=rd.CATEGORY_ORDER,
+            active={"category": category, "diet": diet, "spice": spice},
+            total=len(recipes), can_make=can_make, almost=almost,
+            have_items=bool(names))
+
+    @app.route("/recipe/<recipe_id>")
+    def recipe(recipe_id):
+        r = rd.by_id(recipe_id)
+        if not r:
+            flash("Recipe not found.", "error")
+            return redirect(url_for("cook"))
+        # Which of this recipe's ingredients you already have
+        have = {it.normalized_name() for it in Item.query.filter_by(status=ACTIVE)}
+
+        def owned(ing):
+            i = ing.lower()
+            return any(i in h or h in i for h in have)
+
+        return render_template("recipe.html", r=r, owned=owned)
 
     @app.route("/stats")
     def stats():

@@ -88,3 +88,71 @@ h1 { font-size:26px; margin:.2em 0 .6em; }
   .card{ grid-template-columns:1fr; }
 }
 footer { text-align:center; color:var(--muted); font-size:13px; padding:30px 0; }
+
+/* ===== Cook page: filters ===== */
+.filters { background:#fff; border:1px solid var(--line); border-radius:12px;
+  padding:14px 16px; margin-bottom:20px; }
+.filter-group { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:6px 0; }
+.filter-label { font-size:12px; text-transform:uppercase; letter-spacing:.04em;
+  color:var(--muted); width:72px; font-weight:700; }
+.chip { padding:6px 12px; border:1px solid var(--line); border-radius:20px;
+  font-size:13px; font-weight:600; color:var(--ink); background:#fff; }
+.chip:hover { border-color:var(--green); }
+.chip.on { background:var(--green); color:#fff; border-color:var(--green); }
+
+/* ===== recipe cards grid ===== */
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
+.rcard { display:flex; flex-direction:column; background:#fff; border:1px solid var(--line);
+  border-radius:12px; overflow:hidden; transition:transform .08s, box-shadow .08s; }
+.rcard:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,.08); }
+.rcard-thumb { width:100%; height:120px; object-fit:cover; display:flex;
+  align-items:center; justify-content:center; font-size:44px; }
+.rcard-thumb.tiffins { background:#e8f5e9; }
+.rcard-thumb.meals { background:#fff3e0; }
+.rcard-thumb.biryani { background:#fdece7; }
+.rcard-thumb.desserts { background:#f3e5f5; }
+.rcard-body { padding:12px 14px; }
+.rcard-body strong { display:block; margin-bottom:6px; }
+.rcard-meta { display:flex; flex-wrap:wrap; gap:8px; font-size:12px; color:var(--muted); }
+.pantry-match { background:var(--green-l); border-radius:14px; padding:4px 16px 16px; margin-bottom:8px; }
+
+/* ===== recipe detail ===== */
+.back { display:inline-block; color:var(--muted); font-weight:600; margin-bottom:14px; }
+.recipe-hero { display:flex; gap:20px; align-items:center; background:#fff;
+  border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:18px; }
+.hero-img { width:200px; height:150px; object-fit:cover; border-radius:10px; flex-shrink:0; }
+.hero-img.placeholder { display:flex; align-items:center; justify-content:center; font-size:64px; }
+.hero-info h1 { margin:.1em 0 .4em; }
+.badges { display:flex; flex-wrap:wrap; gap:8px; }
+.pill { background:#eef2f4; color:var(--ink); padding:5px 11px; border-radius:20px;
+  font-size:13px; font-weight:600; }
+.ing-list { list-style:none; padding:0; display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:6px; }
+.ing-list li { padding:6px 10px; background:#fff; border:1px solid var(--line); border-radius:8px; font-size:14px; }
+.ing-list li.have { background:var(--green-l); border-color:var(--green); color:var(--green); }
+.spice-note { background:var(--amber-l); border:1px solid #ffe082; border-radius:10px;
+  padding:12px 16px; margin:16px 0; font-size:14px; }
+
+.step { display:grid; grid-template-columns:36px 180px 1fr; gap:16px; align-items:start;
+  background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:12px; }
+.step-num { width:36px; height:36px; border-radius:50%; background:var(--green); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-weight:800; }
+.step-media img { width:180px; height:120px; object-fit:cover; border-radius:8px; }
+.step-ph { width:180px; height:120px; border-radius:8px; background:#eef2f4; color:var(--muted);
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;
+  border:1px dashed #cfd8dc; }
+.step-body p { margin:0 0 10px; }
+.timer { display:flex; align-items:center; gap:10px; }
+.timer-btn { background:#fff; border:1px solid var(--green); color:var(--green);
+  border-radius:8px; padding:7px 12px; font-weight:700; cursor:pointer; font-size:13px; }
+.timer-btn:hover { background:var(--green-l); }
+.timer-display { font-variant-numeric:tabular-nums; font-weight:700; font-size:16px; }
+.step.done { border-color:var(--green); background:var(--green-l); }
+
+@media (max-width:640px){
+  .recipe-hero { flex-direction:column; align-items:flex-start; }
+  .hero-img { width:100%; height:180px; }
+  .step { grid-template-columns:30px 1fr; }
+  .step-media { grid-column:1 / -1; }
+  .step-media img, .step-ph { width:100%; }
+}

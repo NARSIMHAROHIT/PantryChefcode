@@ -12,12 +12,25 @@ food and save money.
 - **Pantry dashboard** — all your food in one place, colour-coded by expiry
   (🔴 expired, 🟠 use within 3 days, 🟢 fresh).
 - **Add items** — name, quantity, category, and an optional expiry date.
-- **Cook page** — suggests recipes you can make right now from your ingredients, plus
-  ones you're only 1–2 items away from.
+- **Cook — guided, step-by-step recipes** — browse dishes by **category**
+  (Tiffins, Meals, Biryani, Desserts), filter by **diet** (veg / vegan / non-veg) and
+  **spice level** (mild / medium / hot). Each recipe shows *what to add first, how long to
+  wait, and what comes next*, with a photo slot per step and a built-in **countdown timer**
+  on every waiting step. Every recipe includes a tip for turning the spice up or down.
+- **Cook from your pantry** — the Cook page highlights recipes you can make right now with
+  what you already have.
 - **Used / Wasted tracking** — mark what you finish; the **Stats** page shows your waste
   rate so you can watch it drop.
 - **Daily alerts** — a background worker (`alerts.py`) emails you a digest of what's about
   to go bad (email optional — it prints the digest if email isn't configured).
+
+## Adding step photos
+
+The app looks for images under `static/images/<recipe-id>/` (`hero.jpg`, `step1.jpg`, …).
+Until a file exists it shows a clean placeholder, so the site works with zero images. Drop
+in real photos — from free, reusable sources like **Unsplash, Pexels, or Wikimedia Commons**
+— and they appear automatically. The exact filename list for every recipe is in
+`static/images/README.md`.
 
 ## Tech stack
 
@@ -28,12 +41,14 @@ No external APIs — the recipe engine is self-contained, so it runs anywhere.
 
 ```
 pantrychef/
-├── app.py            # Flask app + routes
+├── app.py            # Flask app + routes (pantry + cook + recipe)
 ├── models.py         # database model (Item)
-├── recipes.py        # recipe data + "what can I cook?" matching engine
+├── recipes_data.py   # guided recipe content (steps, timings, diet, spice, image slots)
+├── recipes.py        # "what can I cook from my pantry?" matcher
 ├── alerts.py         # background worker: expiry digest (email optional)
-├── templates/        # HTML pages
+├── templates/        # HTML pages (dashboard, cook, recipe, add, stats)
 ├── static/style.css  # styling
+├── static/images/    # step photos go here (see static/images/README.md)
 ├── requirements.txt
 ├── .env.example      # copy to .env
 └── deploy/

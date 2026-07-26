@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Cook <span class="muted">— guided, step by step</span></h1>
+
+<!-- ===== Filters ===== -->
+<form class="filters" method="get" action="{{ url_for('cook') }}">
+  <div class="filter-group">
+    <span class="filter-label">Category</span>
+    <a class="chip {{ 'on' if not active.category }}" href="{{ url_for('cook', diet=active.diet, spice=active.spice) }}">All</a>
+    {% for c in categories %}
+      <a class="chip {{ 'on' if active.category == c }}"
+         href="{{ url_for('cook', category=c, diet=active.diet, spice=active.spice) }}">{{ c }}</a>
+    {% endfor %}
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Diet</span>
+    {% for key, lbl in [('', 'All'), ('veg','🟢 Veg'), ('vegan','🌱 Vegan'), ('nonveg','🔴 Non-veg')] %}
+      <a class="chip {{ 'on' if active.diet == (key or none) }}"
+         href="{{ url_for('cook', category=active.category, diet=key, spice=active.spice) }}">{{ lbl }}</a>
+    {% endfor %}
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Spice</span>
+    {% for key, lbl in [('', 'All'), ('mild','Mild'), ('medium','Medium'), ('hot','Hot 🌶️')] %}
+      <a class="chip {{ 'on' if active.spice == (key or none) }}"
+         href="{{ url_for('cook', category=active.category, diet=active.diet, spice=key) }}">{{ lbl }}</a>
+    {% endfor %}
+  </div>
+</form>
+
+<!-- ===== Cook from your pantry ===== -->
+{% if have_items and can_make %}
+<section class="pantry-match">
+  <h2 class="section ok">🍲 You can cook these with what's in your pantry</h2>
+  <div class="grid">
+    {% for c in can_make %}
+      <a class="rcard" href="{{ url_for('recipe', recipe_id=c.id) }}">
+        <div class="rcard-thumb {{ c.category|lower }}">{{ '🍚' if c.category=='Biryani' else ('🍮' if c.category=='Desserts' else ('🍛' if c.category=='Meals' else '🥘')) }}</div>
+        <div class="rcard-body">
+          <strong>{{ c.name }}</strong>
+          <div class="rcard-meta"><span>{{ DIET_LABELS[c.diet] }}</span><span>{{ SPICE_LABELS[c.spice] }}</span><span>{{ c.time }}</span></div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ===== All recipes by category ===== -->
+{% set shown = namespace(any=false) %}
+{% for cat in categories %}
+  {% if groups[cat] %}
+    {% set shown.any = true %}
+    <section>
+      <h2 class="section">{{ cat }} <span class="muted">({{ groups[cat]|length }})</span></h2>
+      <div class="grid">
+        {% for r in groups[cat] %}
+          <a class="rcard" href="{{ url_for('recipe', recipe_id=r.id) }}">
+            {% if has_image(r.id + '/hero.jpg') %}
+              <img class="rcard-thumb" src="{{ url_for('static', filename='images/' + r.id + '/hero.jpg') }}" alt="{{ r.name }}">
+            {% else %}
+              <div class="rcard-thumb {{ r.category|lower }}">{{ '🍚' if r.category=='Biryani' else ('🍮' if r.category=='Desserts' else ('🍛' if r.category=='Meals' else '🥘')) }}</div>
+            {% endif %}
+            <div class="rcard-body">
+              <strong>{{ r.name }}</strong>
+              <div class="rcard-meta"><span>{{ DIET_LABELS[r.diet] }}</span><span>{{ SPICE_LABELS[r.spice] }}</span><span>⏱ {{ r.time }}</span></div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+{% endfor %}
+
+{% if not shown.any %}
+  <p class="empty">No recipes match those filters. <a href="{{ url_for('cook') }}">Clear filters</a>.</p>
+{% endif %}
+{% endblock %}

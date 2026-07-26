@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+<a class="back" href="{{ url_for('cook') }}">← All recipes</a>
+
+<div class="recipe-hero">
+  {% if has_image(r.id + '/hero.jpg') %}
+    <img class="hero-img" src="{{ url_for('static', filename='images/' + r.id + '/hero.jpg') }}" alt="{{ r.name }}">
+  {% else %}
+    <div class="hero-img placeholder {{ r.category|lower }}">
+      <span>{{ '🍚' if r.category=='Biryani' else ('🍮' if r.category=='Desserts' else ('🍛' if r.category=='Meals' else '🥘')) }}</span>
+    </div>
+  {% endif %}
+  <div class="hero-info">
+    <h1>{{ r.name }}</h1>
+    <div class="badges">
+      <span class="pill">{{ DIET_LABELS[r.diet] }}</span>
+      <span class="pill">🌶 {{ SPICE_LABELS[r.spice] }}</span>
+      <span class="pill">⏱ {{ r.time }}</span>
+      <span class="pill">🍽 Serves {{ r.serves }}</span>
+      <span class="pill">📂 {{ r.category }}</span>
+    </div>
+  </div>
+</div>
+
+<section class="ingredients">
+  <h2 class="section">Ingredients</h2>
+  <ul class="ing-list">
+    {% for ing in r.ingredients %}
+      <li class="{{ 'have' if owned(ing) }}">
+        {{ '✅' if owned(ing) else '▫️' }} {{ ing }}
+      </li>
+    {% endfor %}
+  </ul>
+  <p class="muted">✅ = already in your pantry.</p>
+</section>
+
+<section class="spice-note">
+  <strong>🌶 Adjust the spice:</strong> {{ r.spice_tip }}
+</section>
+
+<section>
+  <h2 class="section">Step by step</h2>
+  {% for step in r.steps %}
+    <div class="step">
+      <div class="step-num">{{ loop.index }}</div>
+      <div class="step-media">
+        {% if has_image(r.id + '/' + step.image) %}
+          <img src="{{ url_for('static', filename='images/' + r.id + '/' + step.image) }}" alt="Step {{ loop.index }}">
+        {% else %}
+          <div class="step-ph">Step {{ loop.index }}</div>
+        {% endif %}
+      </div>
+      <div class="step-body">
+        <p>{{ step.text }}</p>
+        {% if step.wait_sec and step.wait_sec > 0 %}
+          <div class="timer" data-seconds="{{ step.wait_sec }}">
+            <button type="button" class="timer-btn">▶ Start {{ (step.wait_sec // 60) }}
+              {{- ' min' if step.wait_sec >= 60 else '' }}{{ ' ' ~ (step.wait_sec % 60) ~ 's' if step.wait_sec % 60 else '' }} timer</button>
+            <span class="timer-display"></span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</section>
+
+<script>
+// Simple per-step countdown timers. No libraries.
+document.querySelectorAll('.timer').forEach(function (t) {
+  var total = parseInt(t.dataset.seconds, 10);
+  var btn = t.querySelector('.timer-btn');
+  var disp = t.querySelector('.timer-display');
+  var id = null, left = total;
+
+  function fmt(s) {
+    var m = Math.floor(s / 60), sec = s % 60;
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+  btn.addEventListener('click', function () {
+    if (id) {                       // pause / reset
+      clearInterval(id); id = null; btn.textContent = '▶ Resume'; return;
+    }
+    btn.textContent = '⏸ Pause';
+    id = setInterval(function () {
+      left--;
+      disp.textContent = ' ' + fmt(left);
+      if (left <= 0) {
+        clearInterval(id); id = null;
+        disp.textContent = ' ✅ Done!';
+        t.classList.add('done');
+        btn.textContent = '▶ Restart'; left = total;
+        try { new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=').play(); } catch (e) {}
+      }
+    }, 1000);
+  });
+});
+</script>
+{% endblock %}
