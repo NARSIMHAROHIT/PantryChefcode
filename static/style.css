@@ -190,3 +190,25 @@ footer { text-align:center; color:var(--muted); font-size:13px; padding:36px 0; 
   .step { grid-template-columns:38px 1fr; }
   .step-media { grid-column:1 / -1; } .step-media img, .step-ph { width:100%; }
 }
+
+/* ===== Add-recipe form ===== */
+.page-head { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.mine-tag { display:inline-block; background:var(--green-l); color:var(--green-d);
+  font-size:11px; font-weight:700; padding:2px 8px; border-radius:10px; margin-bottom:6px; }
+.recipe-form { max-width:720px; }
+.form textarea { width:100%; margin-top:7px; padding:11px 12px; font-size:15px; font-family:inherit;
+  border:1px solid var(--line); border-radius:11px; background:#fff; resize:vertical; transition:.15s; }
+.form textarea:focus { outline:none; border-color:var(--green); box-shadow:0 0 0 3px var(--green-l); }
+.step-row { display:grid; grid-template-columns:34px 1fr; gap:12px; align-items:start;
+  background:var(--bg); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px; }
+.step-row-num { width:34px; height:34px; border-radius:50%; background:var(--green); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-weight:800; }
+.step-row-fields { display:flex; flex-direction:column; gap:8px; }
+.step-row-meta { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+.step-row-meta label.inline { margin:0; font-size:12px; color:var(--muted); font-weight:600;
+  display:flex; align-items:center; gap:8px; }
+.step-row-meta input[type=number] { width:80px; margin:0; padding:7px 9px; }
+.step-row-meta input[type=file] { margin:0; font-size:12px; border:none; padding:0; }
+#add-step { background:#fff; color:var(--green-d) !important; border:1px dashed var(--green) !important;
+  box-shadow:none; }
+#add-step:hover { background:var(--green-l); }

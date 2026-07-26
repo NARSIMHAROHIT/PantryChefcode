@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Cook <span class="muted">— guided, step by step</span></h1>
+<div class="page-head">
+  <h1>Cook <span class="muted">— guided, step by step</span></h1>
+  <a class="btn-add" href="{{ url_for('new_recipe') }}">+ Add your recipe</a>
+</div>
 
 <!-- ===== Filters ===== -->
 <form class="filters" method="get" action="{{ url_for('cook') }}">
@@ -55,14 +58,16 @@
       <h2 class="section">{{ cat }} <span class="muted">({{ groups[cat]|length }})</span></h2>
       <div class="grid">
         {% for r in groups[cat] %}
+          {% set hero = r.id + '/' + (r.hero|default('hero.jpg')) %}
           <a class="rcard" href="{{ url_for('recipe', recipe_id=r.id) }}">
-            {% if has_image(r.id + '/hero.jpg') %}
-              <img class="rcard-thumb" src="{{ url_for('static', filename='images/' + r.id + '/hero.jpg') }}" alt="{{ r.name }}">
+            {% if has_image(hero) %}
+              <img class="rcard-thumb" src="{{ url_for('static', filename='images/' + hero) }}" alt="{{ r.name }}">
             {% else %}
               <div class="rcard-thumb {{ r.category|lower }}">{{ '🍚' if r.category=='Biryani' else ('🍮' if r.category=='Desserts' else ('🍛' if r.category=='Meals' else '🥘')) }}</div>
             {% endif %}
             <div class="rcard-body">
               <strong>{{ r.name }}</strong>
+              {% if r.user_added %}<span class="mine-tag">Yours</span>{% endif %}
               <div class="rcard-meta"><span>{{ DIET_LABELS[r.diet] }}</span><span>{{ SPICE_LABELS[r.spice] }}</span><span>⏱ {{ r.time }}</span></div>
             </div>
           </a>

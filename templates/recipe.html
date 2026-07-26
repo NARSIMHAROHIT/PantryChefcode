@@ -3,8 +3,9 @@
 <a class="back" href="{{ url_for('cook') }}">← All recipes</a>
 
 <div class="recipe-hero">
-  {% if has_image(r.id + '/hero.jpg') %}
-    <img class="hero-img" src="{{ url_for('static', filename='images/' + r.id + '/hero.jpg') }}" alt="{{ r.name }}">
+  {% set hero = r.id + '/' + (r.hero|default('hero.jpg')) %}
+  {% if has_image(hero) %}
+    <img class="hero-img" src="{{ url_for('static', filename='images/' + hero) }}" alt="{{ r.name }}">
   {% else %}
     <div class="hero-img placeholder {{ r.category|lower }}">
       <span>{{ '🍚' if r.category=='Biryani' else ('🍮' if r.category=='Desserts' else ('🍛' if r.category=='Meals' else '🥘')) }}</span>

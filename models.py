@@ -1,4 +1,5 @@
 """Database models for PantryChef."""
+import json
 from datetime import datetime, date
 
 from flask_sqlalchemy import SQLAlchemy
@@ -52,3 +53,43 @@ class Item(db.Model):
 
     def normalized_name(self):
         return self.name.strip().lower()
+
+
+class UserRecipe(db.Model):
+    """A recipe added by the user through the in-app form.
+
+    Ingredients and steps are stored as JSON text so a recipe fits in one row.
+    to_dict() returns the exact same shape as a built-in recipe (recipes_data.py),
+    so the Cook and recipe templates render user recipes with no changes.
+    """
+    __tablename__ = "user_recipes"
+
+    id = db.Column(db.Integer, primary_key=True)
+    slug = db.Column(db.String(120), unique=True, nullable=False)  # used in the URL + image folder
+    name = db.Column(db.String(160), nullable=False)
+    category = db.Column(db.String(40), default="Tiffins")
+    diet = db.Column(db.String(10), default="veg")
+    spice = db.Column(db.String(10), default="mild")
+    time = db.Column(db.String(40), default="")
+    serves = db.Column(db.Integer, default=2)
+    spice_tip = db.Column(db.Text, default="")
+    hero = db.Column(db.String(60), default="")          # hero image filename, if uploaded
+    ingredients_json = db.Column(db.Text, default="[]")
+    steps_json = db.Column(db.Text, default="[]")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.slug,
+            "name": self.name,
+            "category": self.category,
+            "diet": self.diet,
+            "spice": self.spice,
+            "time": self.time or "—",
+            "serves": self.serves,
+            "spice_tip": self.spice_tip or "Season to your taste.",
+            "hero": self.hero or "hero.jpg",
+            "ingredients": json.loads(self.ingredients_json or "[]"),
+            "steps": json.loads(self.steps_json or "[]"),
+            "user_added": True,
+        }

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+<a class="back" href="{{ url_for('cook') }}">← All recipes</a>
+<h1>Add your recipe</h1>
+
+<form class="form recipe-form" method="post" action="{{ url_for('new_recipe') }}" enctype="multipart/form-data">
+  <label>Recipe name
+    <input name="name" required placeholder="e.g. Grandma's Lemon Rice" autofocus>
+  </label>
+
+  <div class="row">
+    <label>Category
+      <select name="category">
+        {% for c in categories %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Diet
+      <select name="diet">
+        <option value="veg">🟢 Veg</option>
+        <option value="vegan">🌱 Vegan</option>
+        <option value="nonveg">🔴 Non-veg</option>
+      </select>
+    </label>
+    <label>Spice
+      <select name="spice">
+        <option value="mild">Mild</option>
+        <option value="medium">Medium</option>
+        <option value="hot">Hot 🌶️</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="row">
+    <label>Total time
+      <input name="time" placeholder="e.g. 25 min">
+    </label>
+    <label>Serves
+      <input name="serves" type="number" min="1" value="2">
+    </label>
+    <label>Main photo <span class="muted">(optional)</span>
+      <input name="hero" type="file" accept="image/*">
+    </label>
+  </div>
+
+  <label>Ingredients <span class="muted">(comma or new line separated)</span>
+    <textarea name="ingredients" rows="3" placeholder="rice, peanuts, mustard seeds, curry leaves, lemon, turmeric"></textarea>
+  </label>
+
+  <label>Adjust-the-spice tip <span class="muted">(optional)</span>
+    <input name="spice_tip" placeholder="e.g. Add extra green chillies for more heat.">
+  </label>
+
+  <h2 class="section">Steps</h2>
+  <p class="muted">Add each step in order. The wait time powers a countdown timer on the recipe page. A photo per step is optional.</p>
+  <div id="steps"></div>
+  <button type="button" class="btn-add" id="add-step">+ Add step</button>
+
+  <div class="actions" style="margin-top:22px;">
+    <button class="btn-add big" type="submit">Save recipe</button>
+    <a class="cancel" href="{{ url_for('cook') }}">Cancel</a>
+  </div>
+</form>
+
+<template id="step-tpl">
+  <div class="step-row">
+    <div class="step-row-num"></div>
+    <div class="step-row-fields">
+      <textarea name="step_text" rows="2" placeholder="What to do in this step…"></textarea>
+      <div class="step-row-meta">
+        <label class="inline">Wait (min)
+          <input name="step_minutes" type="number" min="0" step="0.5" value="0">
+        </label>
+        <label class="inline">Photo
+          <input name="step_image" type="file" accept="image/*">
+        </label>
+        <button type="button" class="mini bad remove-step">Remove</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+const stepsBox = document.getElementById('steps');
+const tpl = document.getElementById('step-tpl');
+
+function renumber() {
+  [...stepsBox.querySelectorAll('.step-row')].forEach((row, i) => {
+    row.querySelector('.step-row-num').textContent = i + 1;
+  });
+}
+function addStep() {
+  const node = tpl.content.cloneNode(true);
+  node.querySelector('.remove-step').addEventListener('click', function () {
+    this.closest('.step-row').remove(); renumber();
+  });
+  stepsBox.appendChild(node);
+  renumber();
+}
+document.getElementById('add-step').addEventListener('click', addStep);
+// start with 3 empty steps
+addStep(); addStep(); addStep();
+</script>
+{% endblock %}
